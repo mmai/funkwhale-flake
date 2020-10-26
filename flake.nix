@@ -18,24 +18,24 @@
   in {
     overlay = final: prev: {
 
-      funkwhale-front =  with final; (mkYarnPackage {
-        name = "funkwhale-frontend";
-        src = final.fetchurl {
-          url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2;
-          sha256 = "sha256-ZYPa7hIWk6sZm1QhYlhQog5ZQ3cQAGqhYBys5cMDxvg=";
-        };
-        postPatch = ''
-                substituteInPlace front/scripts/i18n-compile.sh --replace "/bin/bash" ${bash}/bin/bash
-                substituteInPlace front/scripts/i18n-extract.sh --replace "/bin/bash" ${bash}/bin/bash
-                substituteInPlace front/scripts/fix-fomantic-css.sh --replace "/bin/bash" ${bash}/bin/bash
-                substituteInPlace front/scripts/i18n-populate-contextualized-strings.sh --replace "/bin/bash" ${bash}/bin/bash
-                substituteInPlace front/scripts/i18n-weblate-to-origin.sh --replace "/bin/bash" ${bash}/bin/bash
-        '';
-
-        packageJSON = "front/package.json";
-        yarnLock = "front/yarn.lock";
-      });
-
+      # funkwhale-front =  with final; (mkYarnPackage {
+      #   name = "funkwhale-frontend";
+      #   src = final.fetchurl {
+      #     url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2;
+      #     sha256 = "sha256-ZYPa7hIWk6sZm1QhYlhQog5ZQ3cQAGqhYBys5cMDxvg=";
+      #   };
+      #   postPatch = ''
+      #           substituteInPlace front/scripts/i18n-compile.sh --replace "/bin/bash" ${bash}/bin/bash
+      #           substituteInPlace front/scripts/i18n-extract.sh --replace "/bin/bash" ${bash}/bin/bash
+      #           substituteInPlace front/scripts/fix-fomantic-css.sh --replace "/bin/bash" ${bash}/bin/bash
+      #           substituteInPlace front/scripts/i18n-populate-contextualized-strings.sh --replace "/bin/bash" ${bash}/bin/bash
+      #           substituteInPlace front/scripts/i18n-weblate-to-origin.sh --replace "/bin/bash" ${bash}/bin/bash
+      #   '';
+      #
+      #   packageJSON = "front/package.json";
+      #   yarnLock = "front/yarn.lock";
+      # });
+      
       funkwhale = with final; (stdenv.mkDerivation {
           name = "funkwhale";
           version = "1.0.0";
@@ -43,6 +43,14 @@
             url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2;
             sha256 = "sha256-ZYPa7hIWk6sZm1QhYlhQog5ZQ3cQAGqhYBys5cMDxvg=";
           };
+
+        postPatch = ''
+                substituteInPlace front/scripts/i18n-compile.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/i18n-extract.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/fix-fomantic-css.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/i18n-populate-contextualized-strings.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/i18n-weblate-to-origin.sh --replace "/bin/bash" ${bash}/bin/bash
+        '';
 
           installPhase = ''
             mkdir $out

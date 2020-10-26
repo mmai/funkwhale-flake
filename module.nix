@@ -361,7 +361,7 @@ in
           "${cfg.hostname}" = {
             enableACME = withSSL;
             forceSSL = withSSL;
-            root = "${pkgs.funkwhale-front}/dist";
+            root = "${cfg.dataDir}/front/dist";
           # gzip config is nixos nginx recommendedGzipSettings with gzip_types 
           # from funkwhale doc (https://docs.funkwhale.audio/changelog.html#id5)
             extraConfig = ''
@@ -398,7 +398,7 @@ in
                 proxyPass = "http://funkwhale-api/";
               };
               "/front/" = {
-                alias = "${pkgs.funkwhale-front}/dist/";
+                alias = "${cfg.dataDir}/front/dist/";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -408,7 +408,7 @@ in
                 '';
               };
               "= /front/embed.html" = {
-                alias = "${pkgs.funkwhale-front}/dist/embed.html";
+                alias = "${cfg.dataDir}/front/dist/embed.html";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -502,6 +502,14 @@ in
               mkdir -p ${cfg.dataDir}/config
               ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/config/.env
               ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/.env
+            fi
+            if ! test -e ${cfg.dataDir}/front; then
+              cp -r ${pkgs.funkwhale}/front ${cfg.dataDir}/front
+              chmod -R ug+w ${cfg.dataDir}/front
+              cd ${cfg.dataDir}/front
+              ${pkgs.yarn}/bin/yarn
+              ${pkgs.yarn}/bin/yarn build
+              cd -
             fi
           '';
         };
