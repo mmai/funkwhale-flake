@@ -8,14 +8,18 @@ let
       django = self.django_2_2;
     };
   }).withPackages (ps: [
+    pkgs.django-cacheops
     ps.aioredis
     ps.aiohttp
+    ps.arrow
     ps.autobahn
     ps.av
+    ps.bleach
     ps.boto3
     ps.celery
     ps.channels
     ps.channels-redis
+    ps.click
     ps.django
     ps.django-allauth
     ps.django-auth-ldap
@@ -32,9 +36,11 @@ let
     ps.django-storages
     ps.django_taggit
     ps.django-versatileimagefield
+    ps.feedparser
     ps.gunicorn
     ps.kombu
     ps.ldap
+    ps.markdown
     ps.mutagen
     ps.musicbrainzngs
     ps.pillow
@@ -47,6 +53,7 @@ let
     ps.pymemoize
     ps.pyopenssl
     ps.python_magic
+    ps.pytz
     ps.redis
     ps.requests
     ps.requests-http-signature
@@ -54,6 +61,7 @@ let
     ps.unidecode
     ps.unicode-slugify
     ps.uvicorn
+    ps.watchdog
   ]);
   cfg              = config.services.funkwhale;
   databasePassword = if (cfg.database.passwordFile != null) 
@@ -455,7 +463,7 @@ in
       systemd.services = 
       let serviceConfig = {
         User = "${cfg.user}";
-        WorkingDirectory = "${pkgs.funkwhale}";
+        WorkingDirectory = "${pkgs.funkwhale}/api";
       };
       in {
         funkwhale-psql-init = mkIf cfg.database.createLocally {
@@ -480,12 +488,12 @@ in
             Group = "${cfg.group}";
           };
           script = ''
-            ${pythonEnv.interpreter} ${pkgs.funkwhale}/manage.py migrate
-            ${pythonEnv.interpreter} ${pkgs.funkwhale}/manage.py collectstatic --no-input
+            ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py migrate
+            ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py collectstatic --no-input
             if ! test -e ${cfg.dataDir}/createSuperUser.sh; then
               echo "#!/bin/sh
 
-              ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/manage.py \
+              ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
                 createsuperuser" > ${cfg.dataDir}/createSuperUser.sh
               chmod u+x ${cfg.dataDir}/createSuperUser.sh
               chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
