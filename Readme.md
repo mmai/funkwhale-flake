@@ -28,7 +28,7 @@ Below is an example of a nixos configuration using this flake :
                 '';
               };
 
-              nixpkgs.overlays = [ overlay-unstable funkwhale.overlay ];
+              nixpkgs.overlays = [ funkwhale.overlay ];
 
               services.funkwhale = {
                 enable = true;
@@ -37,7 +37,7 @@ Below is an example of a nixos configuration using this flake :
                 protocol = "http"; # Disable https for local tests
                 api = {
                   # Generate one using `openssl rand -base64 45`, for example
-                  djangoSecretKey = "i1vh21SWu1CayM5KJILxn4aE1jEhvbF9XSxsT8chovgJll1v54VsH0X3AGsJ";
+                  djangoSecretKey = "yoursecretkey";
                 };
               };
 
