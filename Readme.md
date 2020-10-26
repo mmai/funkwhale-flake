@@ -1,5 +1,7 @@
 # Funkwhale flake
 
+Below is an example of a nixos configuration using this flake :
+
 ```nix
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
