@@ -16,14 +16,32 @@
       }
     );
   in {
-
     overlay = final: prev: {
+
+      funkwhale-front =  with final; (mkYarnPackage {
+        name = "funkwhale-frontend";
+        src = final.fetchurl {
+          url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2;
+          sha256 = "sha256-ZYPa7hIWk6sZm1QhYlhQog5ZQ3cQAGqhYBys5cMDxvg=";
+        };
+        postPatch = ''
+                substituteInPlace front/scripts/i18n-compile.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/i18n-extract.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/fix-fomantic-css.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/i18n-populate-contextualized-strings.sh --replace "/bin/bash" ${bash}/bin/bash
+                substituteInPlace front/scripts/i18n-weblate-to-origin.sh --replace "/bin/bash" ${bash}/bin/bash
+        '';
+
+        packageJSON = "front/package.json";
+        yarnLock = "front/yarn.lock";
+      });
+
       funkwhale = with final; (stdenv.mkDerivation {
           name = "funkwhale";
           version = "1.0.0";
-          src = final.fetchurl {
-            url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2
-            sha256 = "1v8v5rha21ksdqnj73qkvc35mxal82hypxa5gnf82y1cjk2lp4w7";
+          src = fetchurl {
+            url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2;
+            sha256 = "sha256-ZYPa7hIWk6sZm1QhYlhQog5ZQ3cQAGqhYBys5cMDxvg=";
           };
 
           installPhase = ''
@@ -40,13 +58,13 @@
           };
         });
 
-      django-cacheops = with final; ( buildPythonPackage rec {
+      django-cacheops = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
         pname = "django-cacheops";
         version = "5.1";
 
         src = fetchPypi {
           inherit pname version;
-          sha256 = "056xiijig8r2nxrd9gj1nki168422rsh8ap5vkbr9zyp1mzvbpn3";
+          sha256 = "sha256-1YUc178whzhKH87PqN3bj1UDDu39b98SciW3W8oPmd0=";
         };
         propagatedBuildInputs = [ django redis six funcy ];
         doCheck = false;
@@ -63,6 +81,7 @@
 
     packages = forAllSystems (system: {
       inherit (nixpkgsFor.${system}) funkwhale;
+      inherit (nixpkgsFor.${system}) funkwhale-front;
       inherit (nixpkgsFor.${system}) django-cacheops;
     });
 
