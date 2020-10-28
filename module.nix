@@ -509,9 +509,9 @@ in
             if ! test -e ${cfg.dataDir}/importMusic.sh; then
               echo "#!/bin/sh
 
-              LIBRARY_ID=$1
+              LIBRARY_ID=$$1
               ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
-                import_files $LIBRARY_ID '/srv/funkwhale/data/music/**/*.*' --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
+                import_files $$LIBRARY_ID '/srv/funkwhale/data/music/**/*.*' --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
               chmod u+x ${cfg.dataDir}/importMusic.sh
               chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
             fi
