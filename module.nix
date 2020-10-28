@@ -221,6 +221,14 @@ in
           '';
         };
 
+        forceSSL = mkOption {
+          type = types.bool;
+          default = true;
+          description = ''
+            Force SSL : put this to 'false' when Let's Encrypt has problems calling 'http:' to check the domain
+          '';
+        };
+
         emailConfig = mkOption {
           type = types.str;
           default = "consolemail://";
@@ -360,7 +368,7 @@ in
         in {
           "${cfg.hostname}" = {
             enableACME = withSSL;
-            forceSSL = withSSL;
+            forceSSL = cfg.forceSSL;
             root = "${cfg.dataDir}/front/dist";
           # gzip config is nixos nginx recommendedGzipSettings with gzip_types 
           # from funkwhale doc (https://docs.funkwhale.audio/changelog.html#id5)

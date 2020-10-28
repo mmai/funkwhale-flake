@@ -34,7 +34,8 @@ Below is an example of a nixos configuration using this flake :
                 enable = true;
                 hostname = "funkwhale.rhumbs.fr";
                 defaultFromEmail = "noreply@funkwhale.rhumbs.fr";
-                protocol = "http"; # Disable https for local tests
+                protocol = "https";
+                # forceSSL = false; # uncomment when LetsEncrypt needs to access "http:" in order to check domain
                 api = {
                   # Generate one using `openssl rand -base64 45`, for example
                   djangoSecretKey = "yoursecretkey";
