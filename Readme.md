@@ -72,3 +72,10 @@ yarn build
 rsync -azv dist/ me@myfunkwhaleserver:/srv/funkwhale/front/dist/
 ```
 
+## Imports
+
+* Copy audio files to the server on the _/srv/funkwhale/music/import/_ directory
+* execute the import script as _postgres_ user, with the library id as a parameter
+```
+su postgres -c "/srv/funkwhale/importMusic.sh <your_library_id>"
+```

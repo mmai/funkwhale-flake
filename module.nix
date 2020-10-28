@@ -88,6 +88,7 @@ let
     "MUSIC_DIRECTORY_PATH=${cfg.musicPath}"
     "MUSIC_DIRECTORY_SERVE_PATH=${cfg.musicPath}"
     "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front/dist"
+    "FUNKWHALE_PLUGINS=funkwhale_api.contrib.scrobbler"
   ];
   funkwhaleEnvFileData = builtins.concatStringsSep "\n" funkwhaleEnvironment;
   funkwhaleEnvScriptData = builtins.concatStringsSep " " funkwhaleEnvironment;
@@ -511,7 +512,7 @@ in
 
               LIBRARY_ID=\$1
               ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
-                import_files \$LIBRARY_ID '/srv/funkwhale/data/music/**/*.*' --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
+                import_files \$LIBRARY_ID '/srv/funkwhale/music/imports --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
               chmod u+x ${cfg.dataDir}/importMusic.sh
               chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
             fi
