@@ -89,7 +89,7 @@
 
     packages = forAllSystems (system: {
       inherit (nixpkgsFor.${system}) funkwhale;
-      inherit (nixpkgsFor.${system}) funkwhale-front;
+      # inherit (nixpkgsFor.${system}) funkwhale-front;
       inherit (nixpkgsFor.${system}) django-cacheops;
     });
 
