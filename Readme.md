@@ -61,17 +61,6 @@ Below is an example of a nixos configuration using this flake :
 }
 ```
 
-The front files doesn't build (pull requests are welcomed), so you need to compile them on your local system and copy them to _/srv/funkwhale/front/dist_ on your funkwhale server:
-
-```sh
-wget https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.zip
-unzip funkwhale-1.0.zip
-cd funkwhale-1.0/front
-yarn
-yarn build
-rsync -azv dist/ me@myfunkwhaleserver:/srv/funkwhale/front/dist/
-```
-
 ## Imports
 
 * Copy audio files to the server on the _/srv/funkwhale/music/import/_ directory

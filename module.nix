@@ -522,12 +522,7 @@ in
               ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/.env
             fi
             if ! test -e ${cfg.dataDir}/front; then
-              cp -r ${pkgs.funkwhale}/front ${cfg.dataDir}/front
-              chmod -R ug+w ${cfg.dataDir}/front
-              cd ${cfg.dataDir}/front
-              ${pkgs.yarn}/bin/yarn
-              ${pkgs.yarn}/bin/yarn build
-              cd -
+              cp -r ${pkgs.funkwhale-front} ${cfg.dataDir}/front
             fi
           '';
         };
