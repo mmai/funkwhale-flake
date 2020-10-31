@@ -87,7 +87,7 @@ let
     "RAVEN_DSN=${cfg.ravenDsn}"
     "MUSIC_DIRECTORY_PATH=${cfg.musicPath}"
     "MUSIC_DIRECTORY_SERVE_PATH=${cfg.musicPath}"
-    "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front/dist"
+    "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front"
     "FUNKWHALE_PLUGINS=funkwhale_api.contrib.scrobbler"
   ];
   funkwhaleEnvFileData = builtins.concatStringsSep "\n" funkwhaleEnvironment;
@@ -370,7 +370,7 @@ in
           "${cfg.hostname}" = {
             enableACME = withSSL;
             forceSSL = cfg.forceSSL;
-            root = "${cfg.dataDir}/front/dist";
+            root = "${cfg.dataDir}/front";
           # gzip config is nixos nginx recommendedGzipSettings with gzip_types 
           # from funkwhale doc (https://docs.funkwhale.audio/changelog.html#id5)
             extraConfig = ''
@@ -407,7 +407,7 @@ in
                 proxyPass = "http://funkwhale-api/";
               };
               "/front/" = {
-                alias = "${cfg.dataDir}/front/dist/";
+                alias = "${cfg.dataDir}/front/";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -417,7 +417,7 @@ in
                 '';
               };
               "= /front/embed.html" = {
-                alias = "${cfg.dataDir}/front/dist/embed.html";
+                alias = "${cfg.dataDir}/front/embed.html";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
