@@ -5,7 +5,7 @@ with lib;
 let
   pythonEnv = (pkgs.python3.override {
     packageOverrides = self: super: rec {
-      django = self.django_2_2;
+      django = self.django_2;
     };
   }).withPackages (ps: [
     pkgs.django-cacheops
