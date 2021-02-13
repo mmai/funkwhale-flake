@@ -1,7 +1,6 @@
 {
   description = "Funkwhale";
 
-  # inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-20.03;
   inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-20.09;
 
   outputs = { self, nixpkgs }:
@@ -29,10 +28,10 @@
 
       funkwhale = with final; (stdenv.mkDerivation {
           name = "funkwhale";
-          version = "1.0.0";
+          version = "1.0.1";
           src = fetchurl {
-            url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2;
-            sha256 = "sha256-ZYPa7hIWk6sZm1QhYlhQog5ZQ3cQAGqhYBys5cMDxvg=";
+            url = https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0.1/funkwhale-1.0.1.tar.bz2;
+            sha256 = "sha256-svckYHcbABppgjD5iuu5Yk5P37jF24+SQccTUj79SbE=";
           };
 
           installPhase = ''
