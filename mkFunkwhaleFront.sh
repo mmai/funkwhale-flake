@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIST='https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0/funkwhale-1.0.tar.bz2'
+DIST='https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/1.0.1/funkwhale-1.0.1.tar.bz2'
 LOCAL='./funkwhale-front'
 TMP=$LOCAL'_tmp'
 
