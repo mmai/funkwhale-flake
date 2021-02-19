@@ -487,6 +487,7 @@ in
               "unaccent";CREATE EXTENSION IF NOT EXISTS "citext";' '';
           };
         };
+        # TODO : test if funkwhale version has been updated and if so : regenerate .env links and copy front 
         funkwhale-init = {
           description = "Funkwhale initialization";
           wantedBy = [ "funkwhale-server.service" "funkwhale-worker.service" "funkwhale-beat.service" ];
