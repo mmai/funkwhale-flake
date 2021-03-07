@@ -69,7 +69,7 @@ Below is an example of a nixos configuration using this flake :
 su -l funkwhale -s /bin/sh -c "/srv/funkwhale/importMusic.sh <your_library_id>"
 ```
 
-## Local tests
+## Test on a local container
 
 Start the funkwhale services in a container on the local machine :
 
@@ -80,7 +80,6 @@ make test
 Create the super user :
 
 ```sh
-make test
 sudo nixos-container run funkwhale -- sudo --user=funkwhale sh -c 'cd /srv/funkwhale && ./createSuperUser.sh'
 ```
 
