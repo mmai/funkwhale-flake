@@ -74,7 +74,7 @@ su -l funkwhale -s /bin/sh -c "/srv/funkwhale/importMusic.sh <your_library_id>"
 Start the funkwhale services in a container on the local machine :
 
 ```sh
-make test
+make local
 ```
 
 Create the super user :
