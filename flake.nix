@@ -39,7 +39,7 @@
             cp -R ./* $out
           '';
 
-          meta = with stdenv.lib; {
+          meta = with lib; {
             description = "A modern, convivial and free music server";
             homepage = https://funkwhale.audio/;
             license = licenses.agpl3;
@@ -59,7 +59,7 @@
         propagatedBuildInputs = [ django redis six funcy ];
         doCheck = false;
 
-        meta = with stdenv.lib; {
+        meta = with lib; {
           description = "A slick ORM cache with automatic granular event-driven invalidation for Django";
           homepage = "http://github.com/Suor/django-cacheops";
           license = licenses.bsd3;
