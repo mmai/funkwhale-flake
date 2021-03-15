@@ -5,27 +5,31 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "narHash": "sha256-42Pn2lpKW9hQDoaCUXu+psjzB1ukusH5KJaqydC5H0g=",
-        "path": "/home/henri/travaux/nix_flakes/funkwhale",
-        "type": "path"
+        "lastModified": 1615825793,
+        "narHash": "sha256-pFsZ+TrciIMA3SkAKb5xDsuxFJQvkTdR/EWxJOH1SSc=",
+        "owner": "mmai",
+        "repo": "funkwhale-flake",
+        "rev": "f3a4857d6e2329903a5921695ce0f86b03edd0f7",
+        "type": "github"
       },
       "original": {
-        "path": "/home/henri/travaux/nix_flakes/funkwhale",
-        "type": "path"
+        "owner": "mmai",
+        "repo": "funkwhale-flake",
+        "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1615532953,
-        "narHash": "sha256-SWpaGjrp/INzorEqMz3HLi6Uuk9I0KAn4YS8B4n3q5g=",
+        "lastModified": 1612995862,
+        "narHash": "sha256-VJPQtC8WDPvQVQGolJqp2i43Yr9bvbyqGK3oWMa5+8g=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "916ee862e87ac5ee2439f2fb7856386b4dc906ae",
+        "rev": "2394284537b89471c87065b040d3dedd8b5907fe",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixos-20.09",
         "repo": "nixpkgs",
         "type": "github"
       }
