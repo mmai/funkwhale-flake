@@ -4,8 +4,12 @@ Below is an example of a nixos configuration using this flake :
 
 ```nix
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
+
+  #   or, for 20.09 packages :
+  # inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+  # inputs.funkwhale.url = "github:mmai/funkwhale-flake/nixos-20.09";
 
   outputs = { self, nixpkgs, funkwhale }: 
   let

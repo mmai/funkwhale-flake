@@ -1,7 +1,7 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  # inputs.funkwhale.url = "github:mmai/funkwhale-flake";
-  inputs.funkwhale.url = "/home/henri/travaux/nix_flakes/funkwhale";
+  inputs.funkwhale.url = "github:mmai/funkwhale-flake";
+  # inputs.funkwhale.url = "/home/henri/travaux/nix_flakes/funkwhale";
 
   outputs = { self, nixpkgs, funkwhale }: 
    {

@@ -5,7 +5,7 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "narHash": "sha256-EXeZlPQ0xjY5F+lMJY+ZQbrn53NrUhASr9dbywGsRPY=",
+        "narHash": "sha256-42Pn2lpKW9hQDoaCUXu+psjzB1ukusH5KJaqydC5H0g=",
         "path": "/home/henri/travaux/nix_flakes/funkwhale",
         "type": "path"
       },
