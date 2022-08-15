@@ -1,10 +1,12 @@
 # Funkwhale flake
 
+Funkwhale 1.2.7 for NixOS 22.05 (should also work on nixos-unstable)
+
 Below is an example of a nixos configuration using this flake :
 
 ```nix
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
 
   outputs = { self, nixpkgs, funkwhale }: 
