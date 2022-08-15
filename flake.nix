@@ -99,8 +99,6 @@
         };
       });
 
-
-      nodeDependencies = (final.callPackage ./funkwhale-front-node {}).package;
     };
 
     packages = forAllSystems (system: {
