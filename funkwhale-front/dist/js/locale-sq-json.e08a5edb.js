@@ -1,1 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["locale-sq-json"],{"0c38":function(o){o.exports=JSON.parse('{"sq":{}}')}}]);

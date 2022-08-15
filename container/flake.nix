@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
   # inputs.funkwhale.url = "/home/henri/travaux/nix_flakes/funkwhale";
 

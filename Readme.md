@@ -7,10 +7,6 @@ Below is an example of a nixos configuration using this flake :
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
 
-  #   or, for 20.09 packages :
-  # inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
-  # inputs.funkwhale.url = "github:mmai/funkwhale-flake/nixos-20.09";
-
   outputs = { self, nixpkgs, funkwhale }: 
   let
     system = "x86_64-linux";
@@ -87,8 +83,11 @@ Create the super user :
 sudo nixos-container run funkwhale -- sudo --user=funkwhale sh -c 'cd /srv/funkwhale && ./createSuperUser.sh'
 ```
 
-Connect to the local service:
-
-```sh
-firefox http://funkwhale
+Connect to the local service: 
+Get the ip address of the container : `machinectl`,  which output something like this :
 ```
+MACHINE   CLASS     SERVICE        OS    VERSION ADDRESSES
+funkwhale container systemd-nspawn nixos 22.05   10.233.2.2…
+```
+
+Then browse to the ip  `firefox http://10.233.2.2`

@@ -1,1 +1,0 @@
-{"name":"Funkwhale","short_name":"Funkwhale","theme_color":"#f2711c","icons":[{"src":"/front/favicon.png","sizes":"192x192","type":"image/png"},{"src":"/front/favicon.png","sizes":"512x512","type":"image/png"}],"start_url":".","display":"minimal-ui","background_color":"#000000","description":"A social platform to enjoy and share music","scope":"/","categories":["music"]}

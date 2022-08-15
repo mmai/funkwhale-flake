@@ -3,12 +3,9 @@
 with lib;
 
 let
-  pythonEnv = (pkgs.python3.override {
-    packageOverrides = self: super: rec {
-      django = self.django_2;
-    };
-  }).withPackages (ps: [
-    pkgs.django-cacheops
+  pythonEnv = pkgs.python3.withPackages (ps: [
+    pkgs.requests-http-message-signatures
+    pkgs.django-cache-memoize
     ps.aioredis
     ps.aiohttp
     ps.arrow
@@ -23,16 +20,16 @@ let
     ps.django
     ps.django-allauth
     ps.django-auth-ldap
-    ps.django-oauth-toolkit
+    ps.django-cacheops
     ps.django-cleanup
     ps.django-cors-headers
     ps.django-dynamic-preferences
+    ps.django-oauth-toolkit
     ps.django_environ
     ps.django-filter
     ps.django_redis
     ps.django-rest-auth
     ps.djangorestframework
-    ps.djangorestframework-jwt
     ps.django-storages
     ps.django_taggit
     ps.django-versatileimagefield
@@ -50,13 +47,11 @@ let
     ps.pyacoustid
     ps.pydub
     ps.PyLD
-    ps.pymemoize
     ps.pyopenssl
     ps.python_magic
     ps.pytz
     ps.redis
     ps.requests
-    ps.requests-http-signature
     ps.service-identity
     ps.unidecode
     ps.unicode-slugify
@@ -83,8 +78,6 @@ let
     "MEDIA_ROOT=${cfg.api.mediaRoot}"
     "STATIC_ROOT=${cfg.api.staticRoot}"
     "DJANGO_SECRET_KEY=${cfg.api.djangoSecretKey}"
-    "RAVEN_ENABLED=${boolToString cfg.enableRaven}"
-    "RAVEN_DSN=${cfg.ravenDsn}"
     "MUSIC_DIRECTORY_PATH=${cfg.musicPath}"
     "MUSIC_DIRECTORY_SERVE_PATH=${cfg.musicPath}"
     "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front"
@@ -282,26 +275,6 @@ in
           '';
         };
 
-        enableRaven = mkOption {
-          type = types.bool;
-          default = false;
-          description = ''
-            Sentry/Raven error reporting (server side).
-            Enable Raven if you want to help improve funkwhale by
-            automatically sending error reports to the funkwhale developers Sentry instance.
-            This will help them detect and correct bugs.
-          '';
-        };
-
-        ravenDsn = mkOption {
-          type = types.str;
-          default = "https://44332e9fdd3d42879c7d35bf8562c6a4:0062dc16a22b41679cd5765e5342f716@sentry.eliotberriot.com/5";
-          description = ''
-            Sentry/Raven DSN.
-            The default is the Funkwhale developers instance DSN.
-          '';
-        };
-
       };
     };
 
@@ -321,13 +294,11 @@ in
         }
       ];
 
-      # users.users = optionalAttrs (cfg.user == "funkwhale") (singleton
-      #   { name = "funkwhale";
-      #     group = cfg.group;
-      #   });
-      users.users.funkwhale = mkIf (cfg.user == "funkwhale") { group = cfg.group; };
+      users.users.funkwhale = mkIf (cfg.user == "funkwhale") {
+        group = cfg.group; 
+        isSystemUser = true;
+      };
 
-      # users.groups = optionalAttrs (cfg.group == "funkwhale") (singleton { name = "funkwhale"; });
       users.groups.funkwhale = mkIf (cfg.group == "funkwhale") {};
 
       services.postgresql = mkIf cfg.database.createLocally {
@@ -409,8 +380,9 @@ in
               "/front/" = {
                 alias = "${cfg.dataDir}/front/";
                 extraConfig = ''
-                  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+                  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
+                  add_header Service-Worker-Allowed "/";
                   expires 30d;
                   add_header Pragma public;
                   add_header Cache-Control "public, must-revalidate, proxy-revalidate";
@@ -419,12 +391,12 @@ in
               "= /front/embed.html" = {
                 alias = "${cfg.dataDir}/front/embed.html";
                 extraConfig = ''
-                  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
-                  add_header Referrer-Policy "strict-origin-when-cross-origin";
-                  add_header X-Frame-Options "ALLOW";
-                  expires 30d;
-                  add_header Pragma public;
-                  add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+                  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
+                add_header Referrer-Policy "strict-origin-when-cross-origin";
+                add_header X-Frame-Options "" always;
+                expires 30d;
+                add_header Pragma public;
+                add_header Cache-Control "public, must-revalidate, proxy-revalidate";
                 '';
               };
               "/federation/" = { 
@@ -548,7 +520,7 @@ in
 
           serviceConfig = serviceConfig // { 
             RuntimeDirectory = "funkwhaleworker"; 
-            ExecStart = "${pythonEnv}/bin/celery -A funkwhale_api.taskapp worker -l INFO";
+            ExecStart = "${pythonEnv}/bin/celery -A funkwhale_api.taskapp worker -l INFO --concurrency=0";
           };
           environment = funkwhaleEnv;
 
