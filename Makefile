@@ -7,3 +7,5 @@ local:
 	sudo nixos-container start funkwhale
 root:
 	sudo nixos-container root-login funkwhale
+superuser:
+	sudo nixos-container run funkwhale -- sudo --user=funkwhale sh -c 'cd /srv/funkwhale && ./createSuperUser.sh'

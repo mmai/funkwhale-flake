@@ -6,7 +6,7 @@ let
   pythonEnv = pkgs.python3.withPackages (ps: [
     pkgs.requests-http-message-signatures
     pkgs.django-cache-memoize
-    ps.aioredis
+
     ps.aiohttp
     ps.arrow
     ps.autobahn
@@ -27,7 +27,7 @@ let
     ps.django-oauth-toolkit
     ps.django_environ
     ps.django-filter
-    ps.django_redis
+    ps.django-redis
     ps.django-rest-auth
     ps.djangorestframework
     ps.django-storages
@@ -50,7 +50,7 @@ let
     ps.pyopenssl
     ps.python_magic
     ps.pytz
-    ps.redis
+    ps.redis 
     ps.requests
     ps.service-identity
     ps.unidecode
@@ -472,23 +472,19 @@ in
           script = ''
             ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py migrate
             ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py collectstatic --no-input
-            if ! test -e ${cfg.dataDir}/createSuperUser.sh; then
-              echo "#!/bin/sh
+            echo "#!/bin/sh
 
-              ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
-                createsuperuser" > ${cfg.dataDir}/createSuperUser.sh
-              chmod u+x ${cfg.dataDir}/createSuperUser.sh
-              chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
-            fi
-            if ! test -e ${cfg.dataDir}/importMusic.sh; then
-              echo "#!/bin/sh
+            ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
+              createsuperuser" > ${cfg.dataDir}/createSuperUser.sh
+            chmod u+x ${cfg.dataDir}/createSuperUser.sh
+            chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
+            echo "#!/bin/sh
 
-              LIBRARY_ID=\$1
-              ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
-                import_files \$LIBRARY_ID '/srv/funkwhale/music/imports --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
-              chmod u+x ${cfg.dataDir}/importMusic.sh
-              chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
-            fi
+            LIBRARY_ID=\$1
+            ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
+              import_files \$LIBRARY_ID '/srv/funkwhale/music/imports --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
+            chmod u+x ${cfg.dataDir}/importMusic.sh
+            chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
             if ! test -e ${cfg.dataDir}/config; then
               mkdir -p ${cfg.dataDir}/config
               ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/config/.env
