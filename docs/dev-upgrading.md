@@ -20,6 +20,8 @@ Look for requirements changes ( ex : `git diff 1.0.1 1.2.7 -- api/requirements/b
 * system packages in api/requirements.apt
 * python packages in api/requirements/base.txt (add missing requirements, then change versions by testing)
 
+or checkout the _develop_ branch and look at the api/poetry.lock file at the commit just after the merge of release tag 
+
 
 Edit flake.nix
 
