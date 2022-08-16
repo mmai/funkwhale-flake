@@ -73,23 +73,13 @@ su -l funkwhale -s /bin/sh -c "/srv/funkwhale/importMusic.sh <your_library_id>"
 
 ## Test on a local container
 
-Start the funkwhale services in a container on the local machine :
-
-```sh
-make local
-```
-
-Create the super user :
-
-```sh
-sudo nixos-container run funkwhale -- sudo --user=funkwhale sh -c 'cd /srv/funkwhale && ./createSuperUser.sh'
-```
-
-Connect to the local service: 
+- start the funkwhale services in a container on the local machine : `make local`
+- wait 30s for the bootstraping of funkwhale services, then create the super user : `make superuser`
+- connect to the local service: 
 Get the ip address of the container : `machinectl`,  which output something like this :
 ```
 MACHINE   CLASS     SERVICE        OS    VERSION ADDRESSES
 funkwhale container systemd-nspawn nixos 22.05   10.233.2.2…
 ```
 
-Then browse to the ip  `firefox http://10.233.2.2`
+Then browse to the ip  `firefox http://10.233.2.2` and login with the super user credentials you created.
