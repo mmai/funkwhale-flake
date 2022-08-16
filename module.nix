@@ -4,9 +4,14 @@ with lib;
 
 let
   pythonEnv = pkgs.python3.withPackages (ps: [
+    # --- packages not in nixpkgs
     pkgs.requests-http-message-signatures
     pkgs.django-cache-memoize
+    # --- packages overriding default nixpkgs
+    pkgs.ioredis        # version 1.3.1 required
+    pkgs.channels-redis # depends on ioredis
 
+    # --- packages from nixpkgs
     ps.aiohttp
     ps.arrow
     ps.autobahn
@@ -15,7 +20,7 @@ let
     ps.boto3
     ps.celery
     ps.channels
-    ps.channels-redis
+    # ps.channels-redis # overrided
     ps.click
     ps.django
     ps.django-allauth
