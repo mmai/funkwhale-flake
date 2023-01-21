@@ -82,7 +82,7 @@ let
     "CACHE_URL=redis://localhost:${toString config.services.redis.port}/0"
     "MEDIA_ROOT=${cfg.api.mediaRoot}"
     "STATIC_ROOT=${cfg.api.staticRoot}"
-    "DJANGO_SECRET_KEY=${cfg.api.djangoSecretKey}"
+    "DJANGO_SECRET_KEY=(cat ${cfg.api.djangoSecretKeyFile})"
     "MUSIC_DIRECTORY_PATH=${cfg.musicPath}"
     "MUSIC_DIRECTORY_SERVE_PATH=${cfg.musicPath}"
     "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front"
@@ -263,12 +263,12 @@ in
             '';
           };
 
-          djangoSecretKey = mkOption {
+          djangoSecretKeyFile = mkOption {
             type = types.str;
+            default = "/run/secrets/funkwhale_django_secret";
             description = ''
-              Django secret key. Generate one using <command>openssl rand -base64 45</command> for example.
+              File containing the django secret key. Generate one using <command>openssl rand -base64 45</command> for example.
             '';
-            example = "6VhAWVKlqu/dJSdz6TVgEJn/cbbAidwsFvg9ddOwuPRssEs0OtzAhJxLcLVC";
           };
         };
 

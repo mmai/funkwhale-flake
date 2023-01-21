@@ -1,7 +1,7 @@
 {
   description = "Funkwhale";
 
-  inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-22.05;
+  inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-22.11;
 
   outputs = { self, nixpkgs }:
   let
@@ -12,11 +12,11 @@
     nixpkgsFor = forAllSystems (system:
       import nixpkgs {
         inherit system;
-        overlays = [ self.overlay ];
+        overlays = [ self.overlays.default ];
       }
     );
   in {
-    overlay = final: prev: {
+    overlays.default = final: prev: {
 
       funkwhale-front = with final; stdenv.mkDerivation {
           pname = "funkwhale-front";
@@ -122,7 +122,7 @@
 
 
     # funkwhale service module
-    nixosModule = (import ./module.nix);
+    nixosModules.default = (import ./module.nix);
 
   };
 }
