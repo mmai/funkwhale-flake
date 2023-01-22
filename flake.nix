@@ -1,11 +1,11 @@
 {
   description = "Funkwhale";
 
-  inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-22.11;
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
 
   outputs = { self, nixpkgs }:
   let
-    version = "1.2.7";
+    version = "1.2.9";
     systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system); 
     # Memoize nixpkgs for different platforms for efficiency.
@@ -28,7 +28,7 @@
           src = fetchurl {
             url =
               "https://dev.funkwhale.audio/funkwhale/funkwhale/-/jobs/artifacts/${version}/download?job=build_front";
-            sha256 = "WheBYJOdQYmqyw0bOs10PfIz89NNc+a+3rVzs09brsc=";
+            sha256 = "sha256-L67isxtdcX5OXzTz1Kbeg0GmWdk6lnv+zKsC04WApv0=";
           };
 
           installPhase = ''
@@ -42,7 +42,7 @@
           inherit version;
           src = fetchurl {
             url = "https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/${version}/funkwhale-${version}.tar.bz2";
-            sha256 = "sha256-UnOz8S2OKtHJM/Lnx9Ud+Y6XziXCtZb9Qs6MqdfkdQU=";
+            sha256 = "sha256-rhXK0t3CEO0rqdjOlDs/DqUR333ru3eH1aBsUkIy9z8=";
           };
 
           installPhase = ''
@@ -84,31 +84,6 @@
         propagatedBuildInputs = [];
         doCheck = false;
       });
-
-      # ------------- nixpkgs overrides -------------------
-
-      ioredis = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
-        pname = "aioredis";
-        version = "1.3.1";
-        src = fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-FfivMLBEx3Gu5nh+XsJGlMBIGEx7nlTDtgx1CkuTJzo=";
-        };
-        propagatedBuildInputs = [ async-timeout hiredis ];
-        doCheck = false;
-      });
-
-      channels-redis = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
-        pname = "channels_redis";
-        version = "3.4.0";
-        src = fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-Xf/UzBYXQSW9QEP8j+dGLKdAPPgB1Zqfp0EO0QH6alc=";
-        };
-        propagatedBuildInputs = [ channels ioredis msgpack ];
-        doCheck = false;
-      });
-
 
     };
 
