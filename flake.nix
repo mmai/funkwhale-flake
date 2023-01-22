@@ -85,31 +85,6 @@
         doCheck = false;
       });
 
-      # ------------- nixpkgs overrides -------------------
-
-      ioredis = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
-        pname = "aioredis";
-        version = "1.3.1";
-        src = fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-FfivMLBEx3Gu5nh+XsJGlMBIGEx7nlTDtgx1CkuTJzo=";
-        };
-        propagatedBuildInputs = [ async-timeout hiredis ];
-        doCheck = false;
-      });
-
-      channels-redis = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
-        pname = "channels_redis";
-        version = "3.4.0";
-        src = fetchPypi {
-          inherit pname version;
-          sha256 = "sha256-Xf/UzBYXQSW9QEP8j+dGLKdAPPgB1Zqfp0EO0QH6alc=";
-        };
-        propagatedBuildInputs = [ channels ioredis msgpack ];
-        doCheck = false;
-      });
-
-
     };
 
 
