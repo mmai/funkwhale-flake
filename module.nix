@@ -7,12 +7,11 @@ let
     # --- packages not in nixpkgs
     pkgs.requests-http-message-signatures
     pkgs.django-cache-memoize
-    # --- packages overriding default nixpkgs
-    pkgs.ioredis        # version 1.3.1 required
-    pkgs.channels-redis # depends on ioredis
 
     # --- packages from nixpkgs
+    ps.PyLD
     ps.aiohttp
+    ps.aioredis
     ps.arrow
     ps.autobahn
     ps.av
@@ -20,7 +19,7 @@ let
     ps.boto3
     ps.celery
     ps.channels
-    # ps.channels-redis # overrided
+    ps.channels-redis
     ps.click
     ps.django
     ps.django-allauth
@@ -29,37 +28,36 @@ let
     ps.django-cleanup
     ps.django-cors-headers
     ps.django-dynamic-preferences
-    ps.django-oauth-toolkit
-    ps.django_environ
     ps.django-filter
+    ps.django-oauth-toolkit
     ps.django-redis
     ps.django-rest-auth
-    ps.djangorestframework
     ps.django-storages
-    ps.django_taggit
     ps.django-versatileimagefield
+    ps.django_environ
+    ps.django_taggit
+    ps.djangorestframework
     ps.feedparser
     ps.gunicorn
     ps.kombu
     ps.ldap
     ps.markdown
-    ps.mutagen
     ps.musicbrainzngs
-    ps.pillow
+    ps.mutagen
     ps.pendulum
     ps.persisting-theory
+    ps.pillow
     ps.psycopg2
     ps.pyacoustid
     ps.pydub
-    ps.PyLD
     ps.pyopenssl
     ps.python_magic
     ps.pytz
     ps.redis 
     ps.requests
     ps.service-identity
-    ps.unidecode
     ps.unicode-slugify
+    ps.unidecode
     ps.uvicorn
     ps.watchdog
   ]);
@@ -82,7 +80,7 @@ let
     "CACHE_URL=redis://localhost:${toString config.services.redis.port}/0"
     "MEDIA_ROOT=${cfg.api.mediaRoot}"
     "STATIC_ROOT=${cfg.api.staticRoot}"
-    "DJANGO_SECRET_KEY=${cfg.api.djangoSecretKey}"
+    "DJANGO_SECRET_KEY=(cat ${cfg.api.djangoSecretKeyFile})"
     "MUSIC_DIRECTORY_PATH=${cfg.musicPath}"
     "MUSIC_DIRECTORY_SERVE_PATH=${cfg.musicPath}"
     "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front"
@@ -263,12 +261,12 @@ in
             '';
           };
 
-          djangoSecretKey = mkOption {
+          djangoSecretKeyFile = mkOption {
             type = types.str;
+            default = "/run/secrets/funkwhale_django_secret";
             description = ''
-              Django secret key. Generate one using <command>openssl rand -base64 45</command> for example.
+              File containing the django secret key. Generate one using <command>openssl rand -base64 45</command> for example.
             '';
-            example = "6VhAWVKlqu/dJSdz6TVgEJn/cbbAidwsFvg9ddOwuPRssEs0OtzAhJxLcLVC";
           };
         };
 
