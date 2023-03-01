@@ -1,7 +1,7 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
-  inputs.funkwhale.url = "github:mmai/funkwhale-flake";
-  # inputs.funkwhale.url = "/home/henri/travaux/nix_flakes/funkwhale";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+  # inputs.funkwhale.url = "github:mmai/funkwhale-flake";
+  inputs.funkwhale.url = "/home/henri/travaux/nix_flakes/funkwhale";
 
   outputs = { self, nixpkgs, funkwhale }: 
    {
@@ -11,9 +11,11 @@
         system = "x86_64-linux";
 
         modules = [
-          funkwhale.nixosModule
+          funkwhale.nixosModules.default
           ( { pkgs, ... }: 
-          let hostname = "funkwhale";
+          let 
+            hostname = "funkwhale";
+            secretFile = pkgs.writeText "djangoSecret" "test123"; # DON'T DO THIS IN PRODUCTION - the password file will be world-readable in the Nix Store!
           in {
             boot.isContainer = true;
 
@@ -26,7 +28,7 @@
             networking.firewall.allowedTCPPorts = [ 80 ];
             networking.hostName = hostname;
 
-            nixpkgs.overlays = [ funkwhale.overlay ];
+            nixpkgs.overlays = [ funkwhale.overlays.default ];
 
             services.funkwhale = {
               enable = true;
@@ -35,8 +37,7 @@
               protocol = "http"; # no ssl for virtualbox
               forceSSL = false; # uncomment when LetsEncrypt needs to access "http:" in order to check domain
               api = {
-                  # Generate one using `openssl rand -base64 45`, for example
-                  djangoSecretKey = "yoursecretkey";
+                  djangoSecretKeyFile = "${secretFile}";
                 };
               };
 

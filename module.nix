@@ -3,11 +3,48 @@
 with lib;
 
 let
-  pythonEnv = pkgs.python3.withPackages (ps: [
+
+  pythonPackagesOverrides = self: super: {
+      # djangorestframework 3.13.1 ( 3.14 is not supported by funkwhale 1.2.9 )
+      # from https://github.com/NixOS/nixpkgs/blob/284e89493f5507c4fa03decaeabf9bd68b980239/pkgs/development/python-modules/djangorestframework/default.nix
+    djangorestframework = super.buildPythonPackage rec {
+      # djangorestframework =  with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
+        pname = "djangorestframework";
+        version = "3.13.1";
+        src = pkgs.fetchFromGitHub {
+          owner = "encode";
+          repo = "django-rest-framework";
+          rev = version;
+          sha256 = "sha256-XmX6DZBZYzVCe72GERplAWt5jIjV/cYercZGb0pYjoc=";
+        };
+        patches = [
+          # See https://github.com/encode/django-rest-framework/issues/8608
+          # and https://github.com/encode/django-rest-framework/pull/8591/
+          (pkgs.fetchpatch {
+            name = "fix-django-collect-static.patch";
+            url = "https://github.com/encode/django-rest-framework/pull/8591/commits/65943bb58deba6ee1a89fe4504f270ab1806fce6.patch";
+            sha256 = "sha256-wI7EzX9tlyyXAPrJEr+/2uTg7dVY98IKgh7Cc/NZo5k=";
+          })
+        ];
+        propagatedBuildInputs = [
+          pkgs.python310Packages.django
+          pkgs.python310Packages.pytz
+        ];
+        doCheck = false;
+        meta = with lib; {
+          description = "Web APIs for Django, made easy";
+          homepage = "https://www.django-rest-framework.org/";
+          maintainers = with maintainers; [ desiderius SuperSandro2000 ];
+          license = licenses.bsd2;
+        };
+      };
+    };
+
+  pythonEnv = (pkgs.python3.override { packageOverrides = pythonPackagesOverrides; }).withPackages (ps: [
+  # pythonEnv = pkgs.python3.withPackages (ps: [
     # --- packages not in nixpkgs
     pkgs.requests-http-message-signatures
     pkgs.django-cache-memoize
-
     # --- packages from nixpkgs
     ps.PyLD
     ps.aiohttp
@@ -36,7 +73,7 @@ let
     ps.django-versatileimagefield
     ps.django_environ
     ps.django_taggit
-    ps.djangorestframework
+    # ps.djangorestframework # 3.14 not supported
     ps.feedparser
     ps.gunicorn
     ps.kombu
@@ -77,7 +114,7 @@ let
     "DEFAULT_FROM_EMAIL=${cfg.defaultFromEmail}"
     "REVERSE_PROXY_TYPE=nginx"
     "DATABASE_URL=${databaseUrl}"
-    "CACHE_URL=redis://localhost:${toString config.services.redis.port}/0"
+    "CACHE_URL=redis://localhost:${toString config.services.redis.servers."".port}/0"
     "MEDIA_ROOT=${cfg.api.mediaRoot}"
     "STATIC_ROOT=${cfg.api.staticRoot}"
     "DJANGO_SECRET_KEY=(cat ${cfg.api.djangoSecretKeyFile})"
@@ -314,7 +351,7 @@ in
         ];
       };
 
-      services.redis.enable =  true;
+      services.redis.servers."".enable =  true;
 
       services.nginx = {
         enable = true;

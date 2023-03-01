@@ -5,47 +5,44 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1660676448,
-        "narHash": "sha256-tdVkoW8qjCY+VTrb4BqCXbX77nOiylLowAqYZPLDvdM=",
-        "owner": "mmai",
-        "repo": "funkwhale-flake",
-        "rev": "1cf815c758f70cf654b3782e3262c845326a4a04",
-        "type": "github"
+        "lastModified": 1677679572,
+        "narHash": "sha256-r/Mov8h6JO1UVUngoVfz6LnfbS7IhgTTdP+VCGoVC08=",
+        "type": "git",
+        "url": "file:///home/henri/travaux/nix_flakes/funkwhale"
       },
       "original": {
-        "owner": "mmai",
-        "repo": "funkwhale-flake",
-        "type": "github"
+        "type": "git",
+        "url": "file:///home/henri/travaux/nix_flakes/funkwhale"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1660581366,
-        "narHash": "sha256-et+bi9/jlSF/pHx5AYB9ZP2XDdZEQ0vnF7xlvs4503Y=",
+        "lastModified": 1677543769,
+        "narHash": "sha256-LwbqS8vGisXl2WHpK9r5+kodr0zoIT8F2YB0R4y1TsA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3d47bbaa26e7a771059d828eecf3bd8bf28a8b0f",
+        "rev": "b26d52c9feb6476580016e78935cbf96eb3e2115",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-22.05",
+        "ref": "nixos-22.11",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1660496378,
-        "narHash": "sha256-sgAhmrC1iSnl5T2VPPiMpciH1aRw5c7PYEdXX6jd6Gk=",
+        "lastModified": 1677543769,
+        "narHash": "sha256-LwbqS8vGisXl2WHpK9r5+kodr0zoIT8F2YB0R4y1TsA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "879121648fe522b38cc1cf75aef160a14a1f2e7b",
+        "rev": "b26d52c9feb6476580016e78935cbf96eb3e2115",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-22.05",
+        "ref": "nixos-22.11",
         "repo": "nixpkgs",
         "type": "github"
       }

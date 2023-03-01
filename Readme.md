@@ -1,17 +1,18 @@
 # Funkwhale flake
 
-Funkwhale 1.2.7 for NixOS 22.05 
+Funkwhale 1.2.9 for NixOS 22.11 
 
 Below is an example of a nixos configuration using this flake :
 
 ```nix
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
 
   outputs = { self, nixpkgs, funkwhale }: 
   let
     system = "x86_64-linux";
+    djangoSecretFile = pkgs.writeText "djangoSecret" "test123"; # DON'T DO THIS IN PRODUCTION - the password file will be world-readable in the Nix Store!
   in {
     nixosConfigurations = {
 
@@ -39,8 +40,7 @@ Below is an example of a nixos configuration using this flake :
                 protocol = "https";
                 # forceSSL = false; # uncomment when LetsEncrypt needs to access "http:" in order to check domain
                 api = {
-                  # Generate one using `openssl rand -base64 45`, for example
-                  djangoSecretKey = "yoursecretkey";
+                  djangoSecretKeyFile = "${djangoSecretFile}";
                 };
               };
 
@@ -79,7 +79,7 @@ su -l funkwhale -s /bin/sh -c "/srv/funkwhale/importMusic.sh <your_library_id>"
 Get the ip address of the container : `machinectl`,  which output something like this :
 ```
 MACHINE   CLASS     SERVICE        OS    VERSION ADDRESSES
-funkwhale container systemd-nspawn nixos 22.05   10.233.2.2…
+funkwhale container systemd-nspawn nixos 22.11   10.233.2.2…
 ```
 
 Then browse to the ip  `firefox http://10.233.2.2` and login with the super user credentials you created.
