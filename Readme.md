@@ -1,13 +1,14 @@
 # Funkwhale flake
 
-Funkwhale 1.2.9 for NixOS 22.11 
+Funkwhale 1.2.9 for NixOS 23.05 
 
 Below is an example of a nixos configuration using this flake :
 
 ```nix
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
+  inputs.typesense.url = "github:mmai/typesense-flake";
 
   outputs = { self, nixpkgs, funkwhale }: 
   let
@@ -20,6 +21,7 @@ Below is an example of a nixos configuration using this flake :
         system = system;
         modules = [ 
           nixpkgs.nixosModules.notDetected
+	        typesense.nixosModule
 	        funkwhale.nixosModule
           ( { config, pkgs, ... }:
             { imports = [ ./hardware-configuration.nix ];
@@ -31,7 +33,11 @@ Below is an example of a nixos configuration using this flake :
                 '';
               };
 
-              nixpkgs.overlays = [ funkwhale.overlay ];
+              nixpkgs.overlays = [ funkwhale.overlay typesense.overlay ];
+
+              services.typesense = {
+                enable = true;
+              };
 
               services.funkwhale = {
                 enable = true;
@@ -79,7 +85,7 @@ su -l funkwhale -s /bin/sh -c "/srv/funkwhale/importMusic.sh <your_library_id>"
 Get the ip address of the container : `machinectl`,  which output something like this :
 ```
 MACHINE   CLASS     SERVICE        OS    VERSION ADDRESSES
-funkwhale container systemd-nspawn nixos 22.11   10.233.2.2…
+funkwhale container systemd-nspawn nixos 23.05   10.233.2.2…
 ```
 
 Then browse to the ip  `firefox http://10.233.2.2` and login with the super user credentials you created.

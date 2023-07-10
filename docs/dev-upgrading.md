@@ -3,11 +3,18 @@
 
 ## Update funkwhale nixos pkgs
 
+Get last Funkwhale release source code in order to compare with previous release.
+
+```sh
+./fetchFunkwhaleCode.sh 1.3.1
+```
+
 ### Module
 
 See changes in https://docs.funkwhale.audio/changelog.html (look for manual actions...)
 
-Funkwhale code is at https://dev.funkwhale.audio/funkwhale/funkwhale
+Compare releases `meld funkwhale_upstream_1.2.9/deploy/ funkwhale_upstream_1.3.1/deploy/`
+
 Look at theses files and make changes in _module.nix_ :
 - deploy/*.service
 - deploy/nginx.template
@@ -16,11 +23,16 @@ Edit module in `nixos/modules/services/web-apps/funkwhale/`
 
 ### Package
 
-Look for requirements changes ( ex : `git diff 1.0.1 1.2.7 -- api/requirements/base.txt`)
+Look for requirements changes
 * system packages in api/requirements.apt
-* python packages in api/requirements/base.txt (add missing requirements, then change versions by testing)
+* python packages  : checkout the _develop_ branch and look at the api/poetry.lock file at the commit just after the merge of release tag  
 
-or checkout the _develop_ branch and look at the api/poetry.lock file at the commit just after the merge of release tag 
+```sh
+./fetchFunkwhaleCode.sh 1.3.1
+
+grep "name\|^version =" funkwhale_upstream_1.3.1/api/poetry.lock > docs/pythonDeps_1.3.1.txt
+diff docs/pythonDeps_1.2.9.txt docs/pythonDeps_1.3.1.txt
+```
 
 
 Edit flake.nix

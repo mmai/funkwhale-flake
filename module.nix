@@ -5,55 +5,33 @@ with lib;
 let
 
   pythonPackagesOverrides = self: super: {
-    # djangorestframework 3.12 ( 3.14 is not supported by funkwhale 1.2.9 )
-    # from https://github.com/NixOS/nixpkgs/blob/b50d94a3f27ce81ba39068c2450084460c627886/pkgs/development/python-modules/djangorestframework/default.nix
-    djangorestframework = super.buildPythonPackage rec {
-      version = "3.12.4";
-      pname = "djangorestframework";
-
-      src = pkgs.fetchFromGitHub {
-        owner = "encode";
-        repo = "django-rest-framework";
-        rev = version;
-        sha256 = "sha256-FjMRfVyLmm5J9uOUTLZpO3Pvge3RoYnqIRvzMng7wZo=";
-      };
-
-      # Test settings are missing
-      doCheck = false;
-
-      propagatedBuildInputs = [
-        pkgs.python310Packages.django
-        pkgs.python310Packages.pytz
-      ];
-
-      meta = with lib; {
-        description = "Web APIs for Django, made easy";
-        homepage = "https://www.django-rest-framework.org/";
-        maintainers = with maintainers; [ desiderius ];
-        license = licenses.bsd2;
-      };
-    };
   };
 
 
-  pythonEnv = (pkgs.python3.override { packageOverrides = pythonPackagesOverrides; }).withPackages (ps: [
+  # python >= 3.7 for funkwhale 1.3.1
+  # pythonEnv = (pkgs.python38.override { packageOverrides = pythonPackagesOverrides; }).withPackages (ps: [
+  pythonEnv = (pkgs.python3.override { packageOverrides = pythonPackagesOverrides; }).withPackages (ps: [ # default is python3.10 on nixos 23.05
   # pythonEnv = pkgs.python3.withPackages (ps: [
     # --- packages not in nixpkgs
     pkgs.requests-http-message-signatures
-    pkgs.django-cache-memoize
-    # --- packages from nixpkgs
+    pkgs.django-cache-memoize # --- packages from nixpkgs
     ps.PyLD
     ps.aiohttp
     ps.aioredis
     ps.arrow
+    ps.astroid
     ps.autobahn
     ps.av
+    # ps.backports-zoneinfo # fails with : backports-zoneinfo-0.2.1 not supported for interpreter python3.10
+    pkgs.python311Packages.backports-zoneinfo
     ps.bleach
     ps.boto3
+    ps.cached-property
     ps.celery
     ps.channels
     ps.channels-redis
     ps.click
+    ps.dill
     ps.django
     ps.django-allauth
     ps.django-auth-ldap
@@ -69,10 +47,12 @@ let
     ps.django-versatileimagefield
     ps.django_environ
     ps.django_taggit
-    # ps.djangorestframework # 3.14 not supported
+    ps.djangorestframework
     ps.feedparser
     ps.gunicorn
+    ps.isort
     ps.kombu
+    ps.lazy-object-proxy
     ps.ldap
     ps.markdown
     ps.musicbrainzngs
@@ -83,12 +63,17 @@ let
     ps.psycopg2
     ps.pyacoustid
     ps.pydub
+    ps.pylint
+    ps.pylint-django
+    ps.pylint-plugin-utils
     ps.pyopenssl
     ps.python_magic
     ps.pytz
     ps.redis 
     ps.requests
     ps.service-identity
+    ps.toml
+    ps.tomlkit
     ps.unicode-slugify
     ps.unidecode
     ps.uvicorn
@@ -118,6 +103,7 @@ let
     "MUSIC_DIRECTORY_SERVE_PATH=${cfg.musicPath}"
     "FUNKWHALE_FRONTEND_PATH=${cfg.dataDir}/front"
     "FUNKWHALE_PLUGINS=funkwhale_api.contrib.scrobbler"
+    "TYPESENSE_API_KEY=${cfg.typesenseKey}"
   ];
   funkwhaleEnvFileData = builtins.concatStringsSep "\n" funkwhaleEnvironment;
   funkwhaleEnvScriptData = builtins.concatStringsSep " " funkwhaleEnvironment;
@@ -211,6 +197,14 @@ in
           '';
         };
 
+        typesenseKey = mkOption {
+          type = types.str;
+          default = "my secret typesense key";
+          description = ''
+            Typesense API key.
+          '';
+        };
+
         apiIp = mkOption {
           type = types.str;
           default = "127.0.0.1";
@@ -232,6 +226,22 @@ in
           default = 5000;
           description = ''
             Funkwhale API Port.
+          '';
+        };
+
+        frontIp = mkOption {
+          type = types.str;
+          default = "127.0.0.1";
+          description = ''
+            Funkwhale Front IP.
+          '';
+        };
+
+        frontPort = mkOption {
+          type = types.port;
+          default = 8080;
+          description = ''
+            Funkwhale Front Port.
           '';
         };
 
@@ -353,7 +363,10 @@ in
         enable = true;
         appendHttpConfig = ''
           upstream funkwhale-api {
-          server ${cfg.apiIp}:${toString cfg.apiPort};
+            server ${cfg.apiIp}:${toString cfg.apiPort};
+          }
+          upstream funkwhale-front {
+           server ${cfg.frontIp}:${toString cfg.frontPort};
           }
         '';
         virtualHosts = 
@@ -409,12 +422,12 @@ in
               gzip_vary on;
             '';
             locations = {
-              "/" = { 
+              "/api/" = { 
                 extraConfig = proxyConfig;
-                proxyPass = "http://funkwhale-api/";
+                proxyPass = "http://funkwhale-api";
               };
-              "/front/" = {
-                alias = "${cfg.dataDir}/front/";
+              "/" = {
+                proxyPass = "http://funkwhale-front";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -424,8 +437,19 @@ in
                   add_header Cache-Control "public, must-revalidate, proxy-revalidate";
                 '';
               };
-              "= /front/embed.html" = {
-                alias = "${cfg.dataDir}/front/embed.html";
+              "/front/embed.html" = {
+                proxyPass = "http://funkwhale-front/embed.html";
+                extraConfig = ''
+                  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
+                add_header Referrer-Policy "strict-origin-when-cross-origin";
+                add_header X-Frame-Options "" always;
+                expires 30d;
+                add_header Pragma public;
+                add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+                '';
+              };
+              "/embed.html" = {
+                proxyPass = "http://funkwhale-front/embed.html";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                 add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -437,7 +461,7 @@ in
               };
               "/federation/" = { 
                 extraConfig = proxyConfig;
-                proxyPass = "http://funkwhale-api/federation/";
+                proxyPass = "http://funkwhale-api";
               };
               "/rest/" = { 
                 extraConfig = proxyConfig;
@@ -445,9 +469,35 @@ in
               };
               "/.well-known/" = { 
                 extraConfig = proxyConfig;
-                proxyPass = "http://funkwhale-api/.well-known/";
+                proxyPass = "http://funkwhale-api";
               };
+
+              "/media/__sized__/" = {
+                alias = "/protected/media/__sized__/";
+                extraConfig = ''
+                add_header Access-Control-Allow-Origin '*';
+              add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+                '';
+              };
+
+              "/media/attachments/" = {
+                alias = "/protected/media/attachments/";
+                extraConfig = ''
+                add_header Access-Control-Allow-Origin '*';
+              add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+                '';
+              };
+
+              "/media/dynamic_preferences/" = {
+                alias = "${cfg.api.mediaRoot}/dynamic_preferences";
+                extraConfig = ''
+                add_header Access-Control-Allow-Origin '*';
+              add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+                '';
+              };
+
               "/media/".alias = "${cfg.api.mediaRoot}/";
+
               "/_protected/media/" = {
                 extraConfig = ''
                   internal;
@@ -461,6 +511,11 @@ in
                 alias = "${cfg.musicPath}/";
               };
               "/staticfiles/".alias = "${cfg.api.staticRoot}/";
+
+              # "/manifest.json" = {
+              #   return 302 ${FUNKWHALE_PROTOCOL}://${FUNKWHALE_HOSTNAME}/api/v1/instance/spa-manifest.json;
+              # }
+
             };
           };
         };
@@ -552,7 +607,7 @@ in
 
           serviceConfig = serviceConfig // { 
             RuntimeDirectory = "funkwhaleworker"; 
-            ExecStart = "${pythonEnv}/bin/celery -A funkwhale_api.taskapp worker -l INFO --concurrency=0";
+            ExecStart = "${pythonEnv}/bin/celery --app=funkwhale_api.taskapp worker --loglevel=INFO --concurrency=0";
           };
           environment = funkwhaleEnv;
 
@@ -565,9 +620,11 @@ in
 
           serviceConfig = serviceConfig // { 
             RuntimeDirectory = "funkwhalebeat"; 
-            ExecStart = '' ${pythonEnv}/bin/celery -A funkwhale_api.taskapp beat \
-              -l INFO --schedule="/run/funkwhalebeat/celerybeat-schedule.db"  \
-              --pidfile="/run/funkwhalebeat/celerybeat.pid" '';
+            ExecStart = '' ${pythonEnv}/bin/celery --app=funkwhale_api.taskapp beat --loglevel=INFO  '';
+            # previous :
+            # ExecStart = '' ${pythonEnv}/bin/celery --app=funkwhale_api.taskapp beat --loglevel=INFO \
+            #   --schedule="/run/funkwhalebeat/celerybeat-schedule.db"  \
+            #   --pidfile="/run/funkwhalebeat/celerybeat.pid" '';
           };
           environment = funkwhaleEnv;
 

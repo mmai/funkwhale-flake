@@ -5,7 +5,7 @@
 
   outputs = { self, nixpkgs }:
   let
-    version = "1.2.9";
+    version = "1.3.1";
     systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system); 
     # Memoize nixpkgs for different platforms for efficiency.
@@ -28,7 +28,7 @@
           src = fetchurl {
             url =
               "https://dev.funkwhale.audio/funkwhale/funkwhale/-/jobs/artifacts/${version}/download?job=build_front";
-            sha256 = "sha256-L67isxtdcX5OXzTz1Kbeg0GmWdk6lnv+zKsC04WApv0=";
+            sha256 = "sha256-paxnSaNlk9R1yDRQZwm3pgQiopNeupwnciU7sVEWFw8=";
           };
 
           installPhase = ''

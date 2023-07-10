@@ -1,7 +1,7 @@
 update:
 	nix flake lock --update-input nixpkgs
 local:
-	cd container && nix flake lock --update-input funkwhale && cd -
+	cd container && nix flake lock --update-input funkwhale --update-input typesense && cd -
 	sudo nixos-container destroy funkwhale
 	sudo nixos-container create funkwhale --flake ./container/
 	sudo nixos-container start funkwhale
