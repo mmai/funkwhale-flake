@@ -1,7 +1,7 @@
 {
   description = "Funkwhale";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
 
   outputs = { self, nixpkgs }:
   let
@@ -42,7 +42,7 @@
           inherit version;
           src = fetchurl {
             url = "https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/${version}/funkwhale-${version}.tar.bz2";
-            sha256 = "sha256-rhXK0t3CEO0rqdjOlDs/DqUR333ru3eH1aBsUkIy9z8=";
+            sha256 = "sha256-Fu+N4yOM4h5b3B7U+D7r/0QZGQm8HPhN4jKmYOARN7g=";
           };
 
           installPhase = ''
@@ -85,6 +85,30 @@
         doCheck = false;
       });
 
+      django-versatileimagefield = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
+        pname = "django-versatileimagefield";
+        version = "3.0";
+
+        src = fetchPypi {
+          inherit pname version;
+          hash = "sha256-FlHbLtNthDz7F4jyYBRyopPZuoZyk2m29uVZERI1esc=";
+        };
+        propagatedBuildInputs = [ django pillow python-magic ];
+
+        nativeCheckInputs = [ django ];
+
+        # tests not included with pypi release
+        doCheck = false;
+
+        pythonImportsCheck = [ "versatileimagefield" ];
+
+        meta = with lib; {
+          description = "Replaces django's ImageField with a more flexible interface";
+          homepage = "https://github.com/respondcreate/django-versatileimagefield/";
+          license = licenses.mit;
+          maintainers = with maintainers; [ mmai ];
+        };
+      });
 
     };
 

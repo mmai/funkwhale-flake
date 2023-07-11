@@ -31,6 +31,7 @@ let
     ps.channels
     ps.channels-redis
     ps.click
+    ps.daphne
     ps.dill
     ps.django
     ps.django-allauth
@@ -42,12 +43,14 @@ let
     ps.django-filter
     ps.django-oauth-toolkit
     ps.django-redis
-    ps.django-rest-auth
     ps.django-storages
-    ps.django-versatileimagefield
+    # ps.django-versatileimagefield # fails with ERROR: Could not find a version that satisfies the requirement Django>=3.0 (
+    pkgs.django-versatileimagefield
     ps.django_environ
     ps.django_taggit
     ps.djangorestframework
+    ps.dj-rest-auth
+    ps.drf-spectacular
     ps.feedparser
     ps.gunicorn
     ps.isort
