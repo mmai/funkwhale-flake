@@ -571,14 +571,14 @@ in
             ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
               createsuperuser" > ${cfg.dataDir}/createSuperUser.sh
             chmod u+x ${cfg.dataDir}/createSuperUser.sh
-            chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
+            chown -R ${cfg.user}:${cfg.group} ${cfg.dataDir}
             echo "#!/bin/sh
 
             LIBRARY_ID=\$1
             ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
               import_files \$LIBRARY_ID '/srv/funkwhale/music/imports --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
             chmod u+x ${cfg.dataDir}/importMusic.sh
-            chown -R ${cfg.user}.${cfg.group} ${cfg.dataDir}
+            chown -R ${cfg.user}:${cfg.group} ${cfg.dataDir}
             if ! test -e ${cfg.dataDir}/config; then
               mkdir -p ${cfg.dataDir}/config
               ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/config/.env
@@ -623,11 +623,9 @@ in
 
           serviceConfig = serviceConfig // { 
             RuntimeDirectory = "funkwhalebeat"; 
-            ExecStart = '' ${pythonEnv}/bin/celery --app=funkwhale_api.taskapp beat --loglevel=INFO  '';
-            # previous :
-            # ExecStart = '' ${pythonEnv}/bin/celery --app=funkwhale_api.taskapp beat --loglevel=INFO \
-            #   --schedule="/run/funkwhalebeat/celerybeat-schedule.db"  \
-            #   --pidfile="/run/funkwhalebeat/celerybeat.pid" '';
+            ExecStart = '' ${pythonEnv}/bin/celery --app=funkwhale_api.taskapp beat --loglevel=INFO \
+              --schedule="/run/funkwhalebeat/celerybeat-schedule.db"  \
+              --pidfile="/run/funkwhalebeat/celerybeat.pid" '';
           };
           environment = funkwhaleEnv;
 
