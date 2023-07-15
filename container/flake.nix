@@ -48,13 +48,14 @@
               forceSSL = false; # uncomment when LetsEncrypt needs to access "http:" in order to check domain
               api = {
                   djangoSecretKeyFile = "${secretFile}";
-                };
               };
+            };
 
-              # Overrides default 30M
-              services.nginx.clientMaxBodySize = "100m";
+            # Overrides default 30M
+            services.nginx.clientMaxBodySize = "100m";
 
-            })
+            environment.systemPackages = with pkgs; [ neovim ];
+          })
         ];
       };
 

@@ -114,6 +114,10 @@ let
   funkwhaleEnvFile = pkgs.writeText "funkwhale.env" funkwhaleEnvFileData;
   funkwhaleEnv = {
     ENV_FILE = "${funkwhaleEnvFile}";
+
+    # XXX : copié de api/config/asgi.py ( sinon erreur lors du lancement gunicorn ) 
+    DJANGO_SETTINGS_MODULE = "config.settings.production";
+    ASGI_THREADS = "5";
   };
 in 
   {
@@ -202,7 +206,7 @@ in
 
         typesenseKey = mkOption {
           type = types.str;
-          default = "my secret typesense key";
+          default = "my-secret-typesense-key";
           description = ''
             Typesense API key.
           '';
