@@ -1,8 +1,8 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
-  # inputs.funkwhale.url = "github:mmai/funkwhale-flake";
+  inputs.funkwhale.url = "github:mmai/funkwhale-flake";
   # inputs.funkwhale.url = "/home/henri/travaux/nix_flakes/funkwhale";
-  inputs.funkwhale.url = "/home/henri/travaux/perso/funkwhale-flake";
+  # inputs.funkwhale.url = "/home/henri/travaux/perso/funkwhale-flake";
   # inputs.typesense.url = "/home/henri/travaux/nix_flakes/typesense-flake";
 
   # outputs = { self, nixpkgs, funkwhale, typesense }: 
