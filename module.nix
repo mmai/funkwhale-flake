@@ -246,7 +246,8 @@ in
 
         frontPort = mkOption {
           type = types.port;
-          default = 8080;
+          default = 80;
+          # default = 8080;
           description = ''
             Funkwhale Front Port.
           '';
@@ -434,7 +435,7 @@ in
                 proxyPass = "http://funkwhale-api";
               };
               "/" = {
-                proxyPass = "http://funkwhale-front";
+                # proxyPass = "http://funkwhale-front";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                   add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -444,8 +445,10 @@ in
                   add_header Cache-Control "public, must-revalidate, proxy-revalidate";
                 '';
               };
-              "/front/embed.html" = {
-                proxyPass = "http://funkwhale-front/embed.html";
+              "/front/" = {
+              # "/front/embed.html" = {
+                # proxyPass = "http://funkwhale-front/embed.html";
+                alias = "/";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                 add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -456,7 +459,7 @@ in
                 '';
               };
               "/embed.html" = {
-                proxyPass = "http://funkwhale-front/embed.html";
+                # proxyPass = "http://funkwhale-front/embed.html";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                 add_header Referrer-Policy "strict-origin-when-cross-origin";
