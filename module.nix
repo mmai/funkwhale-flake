@@ -488,7 +488,7 @@ in
                 add_header Access-Control-Allow-Origin '*';
               add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
                 '';
-              }
+              };
 
               "/_protected/media/" = {
                 extraConfig = ''
