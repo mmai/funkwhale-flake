@@ -8,8 +8,6 @@ let
   };
 
 
-  # python >= 3.7 for funkwhale 1.3.1
-  # pythonEnv = (pkgs.python38.override { packageOverrides = pythonPackagesOverrides; }).withPackages (ps: [
   pythonEnv = (pkgs.python3.override { packageOverrides = pythonPackagesOverrides; }).withPackages (ps: [ # default is python3.10 on nixos 23.05
   # pythonEnv = pkgs.python3.withPackages (ps: [
     # --- packages not in nixpkgs
@@ -80,6 +78,7 @@ let
     ps.unicode-slugify
     ps.unidecode
     ps.uvicorn
+    ps.uvloop ps.httptools ps.websockets # additonal packages for uvicorn (to mimic `pip install uvicorn[standard]`) needed for websockets
     ps.watchdog
   ]);
   cfg              = config.services.funkwhale;
