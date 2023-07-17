@@ -448,7 +448,7 @@ in
               "/front/" = {
               # "/front/embed.html" = {
                 # proxyPass = "http://funkwhale-front/embed.html";
-                alias = "/";
+                alias = "${cfg.dataDir}/front/";
                 extraConfig = ''
                   add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
                 add_header Referrer-Policy "strict-origin-when-cross-origin";
@@ -482,31 +482,13 @@ in
                 proxyPass = "http://funkwhale-api";
               };
 
-              "/media/__sized__/" = {
-                alias = "/protected/media/__sized__/";
+              "/media/" = {
+                alias = "${cfg.api.mediaRoot}/";
                 extraConfig = ''
                 add_header Access-Control-Allow-Origin '*';
               add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
                 '';
-              };
-
-              "/media/attachments/" = {
-                alias = "/protected/media/attachments/";
-                extraConfig = ''
-                add_header Access-Control-Allow-Origin '*';
-              add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
-                '';
-              };
-
-              "/media/dynamic_preferences/" = {
-                alias = "${cfg.api.mediaRoot}/dynamic_preferences";
-                extraConfig = ''
-                add_header Access-Control-Allow-Origin '*';
-              add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
-                '';
-              };
-
-              "/media/".alias = "${cfg.api.mediaRoot}/";
+              }
 
               "/_protected/media/" = {
                 extraConfig = ''
