@@ -8,7 +8,6 @@ Below is an example of a nixos configuration using this flake :
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
   inputs.funkwhale.url = "github:mmai/funkwhale-flake";
-  inputs.typesense.url = "github:mmai/typesense-flake";
 
   outputs = { self, nixpkgs, funkwhale }: 
   let
@@ -21,7 +20,6 @@ Below is an example of a nixos configuration using this flake :
         system = system;
         modules = [ 
           nixpkgs.nixosModules.notDetected
-	        typesense.nixosModule
 	        funkwhale.nixosModule
           ( { config, pkgs, ... }:
             { imports = [ ./hardware-configuration.nix ];
@@ -33,11 +31,7 @@ Below is an example of a nixos configuration using this flake :
                 '';
               };
 
-              nixpkgs.overlays = [ funkwhale.overlay typesense.overlay ];
-
-              services.typesense = {
-                enable = true;
-              };
+              nixpkgs.overlays = [ funkwhale.overlay ];
 
               services.funkwhale = {
                 enable = true;
