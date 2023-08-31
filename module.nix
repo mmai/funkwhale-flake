@@ -574,6 +574,7 @@ in
             rm -f ${cfg.dataDir}/config/.env
             ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/.env
 
+            chmod -R u+rwx ${cfg.dataDir}/front
             rm -rf ${cfg.dataDir}/front
             cp -r ${pkgs.funkwhale-front} ${cfg.dataDir}/front
           '';
