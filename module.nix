@@ -567,14 +567,15 @@ in
               import_files \$LIBRARY_ID '/srv/funkwhale/music/imports' --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
             chmod u+x ${cfg.dataDir}/importMusic.sh
             chown -R ${cfg.user}:${cfg.group} ${cfg.dataDir}
-            if ! test -e ${cfg.dataDir}/config; then
-              mkdir -p ${cfg.dataDir}/config
-              ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/config/.env
-              ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/.env
-            fi
-            if ! test -e ${cfg.dataDir}/front; then
-              cp -r ${pkgs.funkwhale-front} ${cfg.dataDir}/front
-            fi
+
+            mkdir -p ${cfg.dataDir}/config
+            rm -f ${cfg.dataDir}/config/.env
+            ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/config/.env
+            rm -f ${cfg.dataDir}/config/.env
+            ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/.env
+
+            rm -rf ${cfg.dataDir}/front
+            cp -r ${pkgs.funkwhale-front} ${cfg.dataDir}/front
           '';
         };
 
