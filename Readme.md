@@ -66,9 +66,9 @@ Below is an example of a nixos configuration using this flake :
 ## Imports
 
 * Copy audio files to the server on the _/srv/funkwhale/music/import/_ directory
-* execute the import script as _funkwhale_ user, with the library id as a parameter
+* execute the import command as _funkwhale_ user, with the library id as a parameter
 ```
-su -l funkwhale -s /bin/sh -c "/srv/funkwhale/importMusic.sh <your_library_id>"
+su -l funkwhale -s /bin/sh -c "funkwhale-manage import_files <your_library_id> '/srv/funkwhale/music/imports' --recursive --noinput --in-place"
 ```
 
 ## Test on a local container
