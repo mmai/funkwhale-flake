@@ -24,7 +24,7 @@ Edit module in `nixos/modules/services/web-apps/funkwhale/`
 ### Package
 
 Look for requirements changes
-* system packages in api/requirements.apt
+* system packages in api/pyproject.toml
 * python packages  : checkout the _develop_ branch and look at the api/poetry.lock file at the commit just after the merge of release tag  
 
 ```sh

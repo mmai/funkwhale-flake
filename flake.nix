@@ -5,7 +5,7 @@
 
   outputs = { self, nixpkgs }:
   let
-    version = "1.3.1";
+    version = "1.3.3";
     systems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system); 
     # Memoize nixpkgs for different platforms for efficiency.
@@ -28,7 +28,7 @@
           src = fetchurl {
             url =
               "https://dev.funkwhale.audio/funkwhale/funkwhale/-/jobs/artifacts/${version}/download?job=build_front";
-            sha256 = "sha256-nCawQ/qIqJk7JacAN2JBI5vsSjHDRyXGMJXQPxioKoI=";
+            sha256 = "sha256-IyUqGbp16p4dJZSMAEvtfe05bLOgt1T/mYUXdmhMrDk=";
           };
 
           installPhase = ''
@@ -42,8 +42,10 @@
           inherit version;
           src = fetchurl {
             url = "https://dev.funkwhale.audio/funkwhale/funkwhale/-/archive/${version}/funkwhale-${version}.tar.bz2";
-            sha256 = "sha256-Fu+N4yOM4h5b3B7U+D7r/0QZGQm8HPhN4jKmYOARN7g=";
+            sha256 = "sha256-bcJMY0Ndnlq5hKJVYMO/qwckYTZtABhDJem2C9E/zB4=";
           };
+
+          patches = [ ./funkwhale.patch ];
 
           installPhase = ''
             sed "s|env -S|env|g" -i front/scripts/*.sh
@@ -107,6 +109,144 @@
           homepage = "https://github.com/respondcreate/django-versatileimagefield/";
           license = licenses.mit;
           maintainers = with maintainers; [ mmai ];
+        };
+      });
+
+      # ------------- will be in 23.11
+      jsonschema-specifications = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
+        pname = "jsonschema-specifications";
+        version = "2023.7.1";
+        format = "pyproject";
+
+        disabled = pythonOlder "3.8";
+
+        src = fetchPypi {
+          pname = "jsonschema_specifications";
+          inherit version;
+          hash = "sha256-yRpQQE6Iofa6QGNneOLuCPbiTFYT/kxTrCRXilp/crs=";
+        };
+
+        nativeBuildInputs = [
+          hatch-vcs
+          hatchling
+        ];
+
+        propagatedBuildInputs = [
+          referencing
+        ] ++ lib.optionals (pythonOlder "3.9") [
+          importlib-resources
+        ];
+
+        nativeCheckInputs = [
+          pytestCheckHook
+        ];
+
+        pythonImportsCheck = [
+          "jsonschema_specifications"
+        ];
+
+        meta = with lib; {
+          description = "Support files exposing JSON from the JSON Schema specifications";
+          homepage = "https://github.com/python-jsonschema/jsonschema-specifications";
+          license = licenses.mit;
+          maintainers = with maintainers; [ SuperSandro2000 ];
+        };
+      });
+
+      referencing = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
+        pname = "referencing";
+        version = "0.30.0";
+        format = "pyproject";
+
+        disabled = pythonOlder "3.7";
+
+        src = fetchFromGitHub {
+          owner = "python-jsonschema";
+          repo = "referencing";
+          rev = "refs/tags/v${version}";
+          fetchSubmodules = true;
+          hash = "sha256-nJSnZM3gg2+yfFAnOJzzXsmIEQdNf5ypt5R0O60NphA=";
+        };
+
+        SETUPTOOLS_SCM_PRETEND_VERSION = version;
+
+        nativeBuildInputs = [
+          hatch-vcs
+          hatchling
+        ];
+
+        propagatedBuildInputs = [
+          attrs
+          rpds-py
+        ];
+
+        nativeCheckInputs = [
+          jsonschema
+          pytest-subtests
+          pytestCheckHook
+        ];
+
+        # avoid infinite recursion with jsonschema
+        doCheck = false;
+
+        passthru.tests.referencing = self.overridePythonAttrs { doCheck = true; };
+
+        pythonImportsCheck = [
+          "referencing"
+        ];
+
+        meta = with lib; {
+          description = "Cross-specification JSON referencing";
+          homepage = "https://github.com/python-jsonschema/referencing";
+          changelog = "https://github.com/python-jsonschema/referencing/blob/${version}/CHANGELOG.rst";
+          license = licenses.mit;
+          maintainers = with maintainers; [ fab ];
+        };
+      });
+
+      rpds-py = with final; with pkgs.python3.pkgs; ( buildPythonPackage rec {
+        pname = "rpds-py";
+        version = "0.9.2";
+        format = "pyproject";
+
+        disabled = pythonOlder "3.8";
+
+        src = fetchPypi {
+          pname = "rpds_py";
+          inherit version;
+          hash = "sha256-jXDo8UkA8mV8JJ6k3vljvthqKbgfgfW3a1qSFWgN6UU=";
+        };
+
+        cargoDeps = rustPlatform.fetchCargoTarball {
+          inherit src;
+          name = "${pname}-${version}";
+          hash = "sha256-2LiQ+beFj9+kykObPNtqcg+F+8wBDzvWcauwDLHa7Yo=";
+        };
+
+        nativeBuildInputs = [
+          rustPlatform.cargoSetupHook
+          rustPlatform.maturinBuildHook
+          cargo
+          rustc
+        ];
+
+        buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [
+          libiconv
+        ];
+
+        nativeCheckInputs = [
+          pytestCheckHook
+        ];
+
+        pythonImportsCheck = [
+          "rpds"
+        ];
+
+        meta = with lib; {
+          description = "Python bindings to Rust's persistent data structures (rpds";
+          homepage = "https://pypi.org/project/rpds-py/";
+          license = licenses.mit;
+          maintainers = with maintainers; [ fab ];
         };
       });
 

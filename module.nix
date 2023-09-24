@@ -38,6 +38,7 @@ let
     ps.django-cleanup
     ps.django-cors-headers
     ps.django-dynamic-preferences
+    ps.django-extensions
     ps.django-filter
     ps.django-oauth-toolkit
     ps.django-redis
@@ -68,6 +69,7 @@ let
     ps.pylint-django
     ps.pylint-plugin-utils
     ps.pyopenssl
+    ps.pyrsistent
     ps.python_magic
     ps.pytz
     ps.redis 
@@ -111,6 +113,8 @@ let
   funkwhaleEnvScriptData = builtins.concatStringsSep " " funkwhaleEnvironment;
 
   funkwhaleEnvFile = pkgs.writeText "funkwhale.env" funkwhaleEnvFileData;
+
+  # used in systemd units
   funkwhaleEnv = {
     ENV_FILE = "${funkwhaleEnvFile}";
 
@@ -118,6 +122,9 @@ let
     DJANGO_SETTINGS_MODULE = "config.settings.production";
     ASGI_THREADS = "5";
   };
+  funkwhaleManageScript = (pkgs.writeScriptBin "funkwhale-manage" ''
+     ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py "$@"
+  '');
 in 
   {
 
@@ -543,7 +550,6 @@ in
               "unaccent";CREATE EXTENSION IF NOT EXISTS "citext";' '';
           };
         };
-        # TODO : test if funkwhale version has been updated and if so : regenerate .env links and copy front 
         funkwhale-init = {
           description = "Funkwhale initialization";
           wantedBy = [ "funkwhale-server.service" "funkwhale-worker.service" "funkwhale-beat.service" ];
@@ -554,18 +560,18 @@ in
             Group = "${cfg.group}";
           };
           script = ''
-            ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py migrate
-            ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py collectstatic --no-input
+            ${funkwhaleManageScript}/bin/funkwhale-manage migrate
+            ${funkwhaleManageScript}/bin/funkwhale-manage collectstatic --no-input
             echo "#!/bin/sh
 
-            ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
+            ${funkwhaleManageScript}/bin/funkwhale-manage \
               createsuperuser" > ${cfg.dataDir}/createSuperUser.sh
             chmod u+x ${cfg.dataDir}/createSuperUser.sh
             chown -R ${cfg.user}:${cfg.group} ${cfg.dataDir}
             echo "#!/bin/sh
 
             LIBRARY_ID=\$1
-            ${funkwhaleEnvScriptData} ${pythonEnv.interpreter} ${pkgs.funkwhale}/api/manage.py \
+            ${funkwhaleManageScript}/bin/funkwhale-manage \
               import_files \$LIBRARY_ID '/srv/funkwhale/music/imports' --recursive --noinput --in-place" > ${cfg.dataDir}/importMusic.sh
             chmod u+x ${cfg.dataDir}/importMusic.sh
             chown -R ${cfg.user}:${cfg.group} ${cfg.dataDir}
@@ -576,9 +582,9 @@ in
             rm -f ${cfg.dataDir}/config/.env
             ln -s ${funkwhaleEnvFile} ${cfg.dataDir}/.env
 
-            chmod -R u+rwx ${cfg.dataDir}/front
             rm -rf ${cfg.dataDir}/front
             cp -r ${pkgs.funkwhale-front} ${cfg.dataDir}/front
+            chmod -R u+rwx ${cfg.dataDir}/front
           '';
         };
 
@@ -626,6 +632,7 @@ in
 
       };
 
+      environment.systemPackages = [ pkgs.ffmpeg funkwhaleManageScript ];
     };
 
     meta = {
