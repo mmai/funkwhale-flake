@@ -1,6 +1,6 @@
 # Funkwhale flake
 
-Funkwhale 1.3.1 for NixOS 23.05 
+Funkwhale 1.3.3 for NixOS 23.05 
 
 Below is an example of a nixos configuration using this flake :
 
