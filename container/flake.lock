@@ -5,11 +5,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1695556630,
-        "narHash": "sha256-D0RyjgzRzz0E9qXdGJdW4S6hjtLlqMunom8zWSj+dq4=",
+        "lastModified": 1695558379,
+        "narHash": "sha256-cfCg+laLNNZjnvhmVnsfS6wqS0gRs6wVRoFFmmDuHhw=",
         "owner": "mmai",
         "repo": "funkwhale-flake",
-        "rev": "3a4cde5ca4467fe1984dbc7bd0c42d7399ba67bb",
+        "rev": "178b7dbe1e01213546aa17def9f7970dc92c1166",
         "type": "github"
       },
       "original": {
